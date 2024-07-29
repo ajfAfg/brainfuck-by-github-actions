@@ -1,0 +1,32 @@
+name: Entry point for Brainfuck interpreter by GitHub Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      program:
+        description: Brainfuck program
+        required: true
+        type: string
+
+jobs:
+  entrypoint:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: denoland/setup-deno@v1
+      - uses: actions/checkout@v4
+
+      - run: echo "${{ inputs.program }}" > program.txt
+      - name: Create context
+        run: deno run --allow-read createContext.ts program.txt > context.json
+
+      - name: Save context.json
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            context.json
+          key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - uses: ./.github/actions/empty-commit-to-dummy-branch/
+        with:
+          personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
