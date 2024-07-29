@@ -39,24 +39,28 @@ export type Context = {
   transitionFunction: Record<number, number>;
   currentProgramPosition: number;
   currentMemoryPosition: number;
+  stdin: string;
+  stdout: string;
 };
 
 // c.f. https://ja.wikipedia.org/wiki/Brainfuck
 const BYTE_NUM = 30_000;
 
-export const createContext = (program: string): Context => {
+export const createContext = (program: string, stdin: string): Context => {
   return {
     program,
     memory: Array.from(new Uint8Array(BYTE_NUM)),
     transitionFunction: createTransitionFunction(program),
     currentProgramPosition: 0,
     currentMemoryPosition: 0,
+    stdin,
+    stdout: "",
   };
 };
 
 if (import.meta.main) {
-  const filename = Deno.args[0];
-  const content = Deno.readTextFileSync(filename);
+  const program = Deno.args[0];
+  const stdin = Deno.args[1];
 
-  console.log(JSON.stringify(createContext(content)));
+  console.log(JSON.stringify(createContext(program, stdin)));
 }

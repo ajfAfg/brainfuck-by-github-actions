@@ -7,6 +7,11 @@ on:
         description: Brainfuck program
         required: true
         type: string
+      stdin:
+        description: String to be input in the standard input
+        required: false
+        type: string
+        default: ""
 
 jobs:
   entrypoint:
@@ -16,9 +21,8 @@ jobs:
       - uses: denoland/setup-deno@v1
       - uses: actions/checkout@v4
 
-      - run: echo "${{ inputs.program }}" > program.txt
       - name: Create context
-        run: deno run --allow-read createContext.ts program.txt > context.json
+        run: deno run --allow-read createContext.ts "${{ inputs.program }}" "${{ inputs.stdin }}" > context.json
 
       - name: Save context.json
         uses: actions/cache/save@v4

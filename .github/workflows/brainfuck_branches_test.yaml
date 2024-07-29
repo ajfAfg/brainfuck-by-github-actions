@@ -61,6 +61,7 @@ jobs:
 
       - name: Verify
         run: |
+          cat context.json
           test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
           test "$(cat context.json | jq -r '.memory[0]')" = "2"
 
