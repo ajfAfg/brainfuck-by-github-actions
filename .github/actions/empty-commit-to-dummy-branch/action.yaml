@@ -1,0 +1,23 @@
+name: Empty commit to dummy branch
+description: Empty commit to dummy branch. This action is used to fire brainfuck.yaml.
+
+inputs:
+  personal-access-token:
+    description: Personal Access Token of GitHub
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: dummy
+        token: ${{ inputs.personal-access-token }} # NOTE: Cannot use `GITHUB_TOKEN` to fire workflow recursively
+    - name: Fire Brainfuck interpreter
+      shell: bash
+      run: |
+        # c.f. https://zenn.dev/lollipop_onl/articles/eoz-gha-push-diffs
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git commit --allow-empty -m 'Empty commit'
+        git push -u origin dummy
