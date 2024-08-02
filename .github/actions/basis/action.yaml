@@ -1,0 +1,16 @@
+name: "Basis"
+description: "Basis"
+outputs:
+  is-finished:
+    description: "Whether the program has finished or not"
+    value: ${{ steps.basis.outputs.IS_FINISHED }}
+# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+runs:
+  using: composite
+  steps:
+    - name: Output context.json
+      id: basis
+      shell: bash
+      run: |
+        cat context.json
+        echo 'IS_FINISHED=true' >> $GITHUB_OUTPUT

@@ -1,0 +1,17 @@
+name: "<"
+description: "< branch"
+# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+runs:
+  using: composite
+  steps:
+    - name: Evaluates values to be used later
+      shell: bash
+      run: |
+        echo "CURRENT_PROGRAM_POSITION=$(cat context.json | jq -r .currentProgramPosition)" >> $GITHUB_ENV
+        echo "CURRENT_MEMORY_POSITION=$(cat context.json | jq -r .currentMemoryPosition)" >> $GITHUB_ENV
+
+    - name: Update context.json
+      shell: bash
+      run: |
+        cat <<< $(jq ".currentProgramPosition = $(( $CURRENT_PROGRAM_POSITION  + 1 ))" context.json) > context.json
+        cat <<< $(jq ".currentMemoryPosition = $(( $CURRENT_MEMORY_POSITION  - 1 ))" context.json) > context.json

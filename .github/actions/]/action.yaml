@@ -1,0 +1,26 @@
+name: "]"
+description: "] branch"
+# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+runs:
+  using: composite
+  steps:
+    - name: Evaluates values to be used later
+      shell: bash
+      run: |
+        p=$(cat context.json | jq -r .currentProgramPosition)
+        echo "CURRENT_PROGRAM_POSITION=$p" >> $GITHUB_ENV
+        echo "JUMP_TO=$(cat context.json | jq -r ".transitionFunction[\"$p\"]")" >> $GITHUB_ENV
+        p=$(cat context.json | jq -r .currentMemoryPosition)
+        echo "CURRENT_MEMORY_VALUE=$(cat context.json | jq -r ".memory[$p]")" >> $GITHUB_ENV
+
+    - name: Update context.json (if memory value is not 0)
+      shell: bash
+      run: |
+        cat <<< $(jq ".currentProgramPosition = $(( $JUMP_TO  + 1 ))" context.json) > context.json
+      if: ${{ env.CURRENT_MEMORY_VALUE != 0 }}
+
+    - name: Update context.json (if memory value is 0)
+      shell: bash
+      run: |
+        cat <<< $(jq ".currentProgramPosition = $(( $CURRENT_PROGRAM_POSITION  + 1 ))" context.json) > context.json
+      if: ${{ env.CURRENT_MEMORY_VALUE == 0 }}
