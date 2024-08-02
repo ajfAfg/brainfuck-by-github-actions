@@ -1,0 +1,278 @@
+name: Test each branch of this brainfuck implementation
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: ["opened", "synchronize", "reopened"]
+
+jobs:
+  gt: # >
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '>>' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/>/
+      - uses: ./.github/actions/>/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
+          test "$(cat context.json | jq -r '.currentMemoryPosition')" = "2"
+
+  lt: # <
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '<<' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/</
+      - uses: ./.github/actions/</
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
+          test "$(cat context.json | jq -r '.currentMemoryPosition')" = "-2"
+
+  plus: # +
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '++' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
+          test "$(cat context.json | jq -r '.memory[0]')" = "2"
+
+  minus: # -
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '--' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/-/
+      - uses: ./.github/actions/-/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
+          test "$(cat context.json | jq -r '.memory[0]')" = "-2"
+
+  dot: # .
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: |
+          deno run createContext.ts '..' '' > context.json
+          cat <<<$(jq ".memory[0] = 65" context.json) > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/_./
+      - uses: ./.github/actions/_./
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
+          test "$(cat context.json | jq -r '.stdout')" = "AA"
+
+  comma: # ,
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts ',>,' 'AB' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/,/
+      - uses: ./.github/actions/>/
+      - uses: ./.github/actions/,/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "3"
+          test "$(cat context.json | jq -r '.memory[0]')" = "65"
+          test "$(cat context.json | jq -r '.memory[1]')" = "66"
+
+  left-parenthesis1: # [
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '[xxx]' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/[/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "5"
+
+  left-parenthesis2: # [
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: |
+          deno run createContext.ts '[xxx]' '' > context.json
+          cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
+
+      - name: Exercise
+        uses: ./.github/actions/[/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+
+  right-parenthesis1: # ]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: |
+          deno run createContext.ts '[xxx]' '' > context.json
+          cat <<<$(jq ".currentProgramPosition = 4" context.json) > context.json # `]` position
+          cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
+
+      - name: Exercise
+        uses: ./.github/actions/]/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+
+  right-parenthesis2: # ]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: |
+          deno run createContext.ts '[xxx]' '' > context.json
+          cat <<<$(jq ".currentProgramPosition = 4" context.json) > context.json # `]` position
+
+      - name: Exercise
+        uses: ./.github/actions/]/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "5"
+
+  otherwise: # Otherwise
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts 'x' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/otherwise/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+
+  basis: # Basis
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '' '' > context.json
+
+      - name: Exercise
+        id: basis
+        uses: ./.github/actions/basis/
+
+      - name: Verify
+        run: |
+          test "${{ steps.basis.outputs.is-finished }}" = "true"
+
+  two-plus-five:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+
+      - name: Setup
+        run: deno run createContext.ts '++>+++++<[->+<]' '' > context.json
+
+      - name: Exercise
+        uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/>/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/</
+      #
+      - uses: ./.github/actions/[/
+      - uses: ./.github/actions/-/
+      - uses: ./.github/actions/>/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/</
+      - uses: ./.github/actions/]/
+      #
+      - uses: ./.github/actions/[/
+      - uses: ./.github/actions/-/
+      - uses: ./.github/actions/>/
+      - uses: ./.github/actions/+/
+      - uses: ./.github/actions/</
+      - uses: ./.github/actions/]/
+      #
+      - uses: ./.github/actions/[/
+      - uses: ./.github/actions/basis/
+
+      - name: Verify
+        run: |
+          test "$(cat context.json | jq -r '.memory[1]')" = "7"
