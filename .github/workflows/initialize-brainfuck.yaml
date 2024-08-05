@@ -1,0 +1,27 @@
+name: Initialize brainfuck
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: ["opened", "synchronize", "reopened"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove all caches
+        run: gh cache list --json id --jq 'map(.id)[]' | xargs -I{} -P0 gh cache delete {}
+
+      - name: Remove dummy branch
+        run: git push origin -d dummy || true
+      - name: Create dummy branch
+        run: |
+          git checkout -b dummy
+          git push origin dummy
