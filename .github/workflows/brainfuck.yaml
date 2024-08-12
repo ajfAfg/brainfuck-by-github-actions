@@ -33,44 +33,44 @@ jobs:
           echo "CURRENT_CHARACTER=$(cat context.json | jq -r '.program' | cut -c $(( 1 + $(cat context.json | jq .currentProgramPosition) )))" >> $GITHUB_OUTPUT
 
       - name: ">"
-        uses: ./.github/actions/>/
+        uses: ./.github/actions/brainfuck-main/>/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '>' }}
 
       - name: "<"
-        uses: ./.github/actions/</
+        uses: ./.github/actions/brainfuck-main/</
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '<' }}
 
       - name: "+"
-        uses: ./.github/actions/+/
+        uses: ./.github/actions/brainfuck-main/+/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '+' }}
 
       - name: "-"
-        uses: ./.github/actions/-/
+        uses: ./.github/actions/brainfuck-main/-/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '-' }}
 
       - name: "."
-        uses: ./.github/actions/_./
+        uses: ./.github/actions/brainfuck-main/_./
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '.' }}
 
       - name: ","
-        uses: ./.github/actions/,/
+        uses: ./.github/actions/brainfuck-main/,/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == ',' }}
 
       - name: "["
-        uses: ./.github/actions/[/
+        uses: ./.github/actions/brainfuck-main/[/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == '[' }}
 
       - name: "]"
-        uses: ./.github/actions/]/
+        uses: ./.github/actions/brainfuck-main/]/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && steps.values.outputs.CURRENT_CHARACTER == ']' }}
 
       - name: Otherwise
-        uses: ./.github/actions/otherwise/
+        uses: ./.github/actions/brainfuck-main/otherwise/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) && !contains('><+-.,[]', steps.values.outputs.CURRENT_CHARACTER) }}
 
       - name: Basis
         id: basis
-        uses: ./.github/actions/basis/
+        uses: ./.github/actions/brainfuck-main/basis/
         if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) }}
 
       #==============================================================================

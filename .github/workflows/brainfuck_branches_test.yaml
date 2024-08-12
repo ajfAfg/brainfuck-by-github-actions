@@ -18,8 +18,8 @@ jobs:
         run: deno run createContext.ts '>>' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/>/
-      - uses: ./.github/actions/>/
+        uses: ./.github/actions/brainfuck-main/>/
+      - uses: ./.github/actions/brainfuck-main/>/
 
       - name: Verify
         run: |
@@ -37,8 +37,8 @@ jobs:
         run: deno run createContext.ts '<<' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/</
-      - uses: ./.github/actions/</
+        uses: ./.github/actions/brainfuck-main/</
+      - uses: ./.github/actions/brainfuck-main/</
 
       - name: Verify
         run: |
@@ -56,8 +56,8 @@ jobs:
         run: deno run createContext.ts '++' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
+        uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
 
       - name: Verify
         run: |
@@ -76,8 +76,8 @@ jobs:
         run: deno run createContext.ts '--' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/-/
-      - uses: ./.github/actions/-/
+        uses: ./.github/actions/brainfuck-main/-/
+      - uses: ./.github/actions/brainfuck-main/-/
 
       - name: Verify
         run: |
@@ -97,8 +97,8 @@ jobs:
           cat <<<$(jq ".memory[0] = 65" context.json) > context.json
 
       - name: Exercise
-        uses: ./.github/actions/_./
-      - uses: ./.github/actions/_./
+        uses: ./.github/actions/brainfuck-main/_./
+      - uses: ./.github/actions/brainfuck-main/_./
 
       - name: Verify
         run: |
@@ -116,9 +116,9 @@ jobs:
         run: deno run createContext.ts ',>,' 'AB' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/,/
-      - uses: ./.github/actions/>/
-      - uses: ./.github/actions/,/
+        uses: ./.github/actions/brainfuck-main/,/
+      - uses: ./.github/actions/brainfuck-main/>/
+      - uses: ./.github/actions/brainfuck-main/,/
 
       - name: Verify
         run: |
@@ -137,7 +137,7 @@ jobs:
         run: deno run createContext.ts '[xxx]' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/[/
+        uses: ./.github/actions/brainfuck-main/[/
 
       - name: Verify
         run: |
@@ -156,7 +156,7 @@ jobs:
           cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
 
       - name: Exercise
-        uses: ./.github/actions/[/
+        uses: ./.github/actions/brainfuck-main/[/
 
       - name: Verify
         run: |
@@ -176,7 +176,7 @@ jobs:
           cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
 
       - name: Exercise
-        uses: ./.github/actions/]/
+        uses: ./.github/actions/brainfuck-main/]/
 
       - name: Verify
         run: |
@@ -195,7 +195,7 @@ jobs:
           cat <<<$(jq ".currentProgramPosition = 4" context.json) > context.json # `]` position
 
       - name: Exercise
-        uses: ./.github/actions/]/
+        uses: ./.github/actions/brainfuck-main/]/
 
       - name: Verify
         run: |
@@ -212,7 +212,7 @@ jobs:
         run: deno run createContext.ts 'x' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/otherwise/
+        uses: ./.github/actions/brainfuck-main/otherwise/
 
       - name: Verify
         run: |
@@ -230,7 +230,7 @@ jobs:
 
       - name: Exercise
         id: basis
-        uses: ./.github/actions/basis/
+        uses: ./.github/actions/brainfuck-main/basis/
 
       - name: Verify
         run: |
@@ -247,32 +247,32 @@ jobs:
         run: deno run createContext.ts '++>+++++<[->+<]' '' > context.json
 
       - name: Exercise
-        uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/>/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/</
+        uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/>/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/</
       #
-      - uses: ./.github/actions/[/
-      - uses: ./.github/actions/-/
-      - uses: ./.github/actions/>/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/</
-      - uses: ./.github/actions/]/
+      - uses: ./.github/actions/brainfuck-main/[/
+      - uses: ./.github/actions/brainfuck-main/-/
+      - uses: ./.github/actions/brainfuck-main/>/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/</
+      - uses: ./.github/actions/brainfuck-main/]/
       #
-      - uses: ./.github/actions/[/
-      - uses: ./.github/actions/-/
-      - uses: ./.github/actions/>/
-      - uses: ./.github/actions/+/
-      - uses: ./.github/actions/</
-      - uses: ./.github/actions/]/
+      - uses: ./.github/actions/brainfuck-main/[/
+      - uses: ./.github/actions/brainfuck-main/-/
+      - uses: ./.github/actions/brainfuck-main/>/
+      - uses: ./.github/actions/brainfuck-main/+/
+      - uses: ./.github/actions/brainfuck-main/</
+      - uses: ./.github/actions/brainfuck-main/]/
       #
-      - uses: ./.github/actions/[/
-      - uses: ./.github/actions/basis/
+      - uses: ./.github/actions/brainfuck-main/[/
+      - uses: ./.github/actions/brainfuck-main/basis/
 
       - name: Verify
         run: |
