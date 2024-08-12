@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  initialize-brainfuck:
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ github.token }}
@@ -20,8 +20,15 @@ jobs:
         run: gh cache list --json id --jq 'map(.id)[]' | xargs -I{} -P0 gh cache delete {}
 
       - name: Remove dummy branch
-        run: git push origin -d dummy || true
+        run: |
+          git push origin -d dummy-main || true
+          git push origin -d dummy-preprocessing || true
       - name: Create dummy branch
         run: |
-          git checkout -b dummy
-          git push origin dummy
+          git checkout main
+          git checkout -b dummy-main
+          git push origin dummy-main
+
+          git checkout main
+          git checkout -b dummy-preprocessing
+          git push origin dummy-preprocessing
