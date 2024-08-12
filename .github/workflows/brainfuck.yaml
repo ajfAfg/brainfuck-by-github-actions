@@ -20,7 +20,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-
       - name: Exit if `content.json` does not exist
-        run: if [ ! -e context.json ]; then exit 1; fi
+        id: check-context-existance
+        run: cat <<<MESSAGE=\'$( cat context.json 2>&1 )\'
+      - run: exit 1
+        if: "${{ steps.check-context-existance.outputs.MESSAGE == 'cat: context.json: No such file or directory' }}"
 
       #==============================================================================
       # Main
