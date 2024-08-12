@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  initialize-brainfuck:
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ github.token }}
@@ -25,6 +25,8 @@ jobs:
           git push origin -d dummy-preprocessing || true
       - name: Create dummy branch
         run: |
+          git branch -q --contains "$( git log --all --format='%H' -1 )"
+
           branch_name=$( echo ${"$( git branch -q --contains "$( git log --all --format='%H' -1 )" )":2} )
           git checkout "$branch_name"
           git checkout -b dummy-main
