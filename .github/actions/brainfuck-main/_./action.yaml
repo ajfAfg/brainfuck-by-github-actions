@@ -1,20 +1,20 @@
 name: "."
 description: ". branch"
-# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+# This action assumes that the state of the Brainfuck interpreter is stored in the directory `program-state`.
 runs:
   using: composite
   steps:
     - name: Evaluates values to be used later
       shell: bash
+      working-directory: program-state
       run: |
-        p=$(cat context.json | jq -r .currentProgramPosition)
-        echo "CURRENT_PROGRAM_POSITION=$p" >> $GITHUB_ENV
-        p=$(cat context.json | jq -r .currentMemoryPosition)
-        echo "CURRENT_MEMORY_VALUE=$(cat context.json | jq -r ".memory[$p]")" >> $GITHUB_ENV
-        echo "STDOUT=$(cat context.json | jq -r .stdout)" >> $GITHUB_ENV
+        cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_ENV
+        cat <<< "CURRENT_MEMORY_VALUE=$(cat memory_$(cat current-memory-position))" >> $GITHUB_ENV
+        cat <<< "STDOUT=$(cat stdout)" >> $GITHUB_ENV
 
-    - name: Update context.json
+    - name: Update program state
       shell: bash
+      working-directory: program-state
       run: |
-        cat <<< $(jq ".stdout = \"$(echo "${STDOUT}$( printf "\x$(printf %x $CURRENT_MEMORY_VALUE)" )" )\"" context.json) > context.json
-        cat <<< $(jq ".currentProgramPosition = $(( $CURRENT_PROGRAM_POSITION  + 1 ))" context.json) > context.json
+        cat <<< $(( $CURRENT_PROGRAM_POSITION + 1 )) >current-program-position
+        cat <<< "$( cat <<<"$STDOUT" )$( cat "../number-to-character/$(cat <<<$CURRENT_MEMORY_VALUE)" )" >stdout

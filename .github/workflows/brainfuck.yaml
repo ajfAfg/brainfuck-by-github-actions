@@ -15,25 +15,30 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            context.json
+            preprocessing-state
+            program-state
+            character-to-number
+            number-to-character
           key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             ${{ runner.os }}-
-      - name: Exit if `content.json` does not exist
-        id: check-context-existance
-        run: cat <<<MESSAGE=\'$( cat context.json 2>&1 )\'
+      - name: Exit if `program-state` does not exist
+        id: check-program-state-existance
+        working-directory: program-state
+        run: cat <<<MESSAGE=\'$( cat program-state 2>&1 )\'
       - run: exit 1
-        if: "${{ steps.check-context-existance.outputs.MESSAGE == 'cat: context.json: No such file or directory' }}"
+        if: "${{ steps.check-program-state-existance.outputs.MESSAGE == 'cat: program-state: No such file or directory' }}"
 
       #==============================================================================
       # Main
-      - run: cat context.json
       - name: Evaluates values to be used later
         id: values
+        working-directory: program-state
         run: |
-          echo "CURRENT_PROGRAM_POSITION=$(cat context.json | jq .currentProgramPosition)" >> $GITHUB_OUTPUT
-          echo "PROGRAM_LENGTH=$(cat context.json | jq '.program | length')" >> $GITHUB_OUTPUT
-          echo "CURRENT_CHARACTER=$(cat context.json | jq -r '.program' | cut -c $(( 1 + $(cat context.json | jq .currentProgramPosition) )))" >> $GITHUB_OUTPUT
+          cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_ENV
+          cat <<< "PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_ENV
+          PROGRAM="$(cat program)"
+          cat <<< "CURRENT_CHARACTER=${PROGRAM:$(cat current-program-position):1}" >> $GITHUB_ENV
 
       - name: ">"
         uses: ./.github/actions/brainfuck-main/>/
@@ -80,7 +85,10 @@ jobs:
       - uses: actions/cache/save@v4
         with:
           path: |
-            context.json
+            preprocessing-state
+            program-state
+            character-to-number
+            number-to-character
           key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - run: sleep 5

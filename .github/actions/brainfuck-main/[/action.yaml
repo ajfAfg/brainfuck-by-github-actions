@@ -1,26 +1,27 @@
 name: "["
 description: "[ branch"
-# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+# This action assumes that the state of the Brainfuck interpreter is stored in the directory `program-state`.
 runs:
   using: composite
   steps:
     - name: Evaluates values to be used later
       shell: bash
+      working-directory: program-state
       run: |
-        p=$(cat context.json | jq -r .currentProgramPosition)
-        echo "CURRENT_PROGRAM_POSITION=$p" >> $GITHUB_ENV
-        echo "JUMP_TO=$(cat context.json | jq -r ".transitionFunction[\"$p\"]")" >> $GITHUB_ENV
-        p=$(cat context.json | jq -r .currentMemoryPosition)
-        echo "CURRENT_MEMORY_VALUE=$(cat context.json | jq -r ".memory[$p]")" >> $GITHUB_ENV
+        cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_ENV
+        cat <<< "JUMP_TO=$(cat "transition-function_$(cat current-program-position)")" >> $GITHUB_ENV
+        cat <<< "CURRENT_MEMORY_VALUE=$(cat memory_$(cat current-memory-position))" >> $GITHUB_ENV
 
-    - name: Update context.json (if memory value is 0)
+    - name: Update program state (if memory value is 0)
       shell: bash
+      working-directory: program-state
       run: |
-        cat <<< $(jq ".currentProgramPosition = $(( $JUMP_TO  + 1 ))" context.json) > context.json
+        cat <<< $(( $JUMP_TO  + 1 )) >current-program-position
       if: ${{ env.CURRENT_MEMORY_VALUE == 0 }}
 
-    - name: Update context.json (if memory value is not 0)
+    - name: Update program state (if memory value is not 0)
       shell: bash
+      working-directory: program-state
       run: |
-        cat <<< $(jq ".currentProgramPosition = $(( $CURRENT_PROGRAM_POSITION  + 1 ))" context.json) > context.json
+        cat <<< $(( $CURRENT_PROGRAM_POSITION + 1 )) >current-program-position
       if: ${{ env.CURRENT_MEMORY_VALUE != 0 }}
