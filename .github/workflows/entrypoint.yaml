@@ -22,6 +22,8 @@ jobs:
 
       - name: Preparation for making each state
         run: |
+          cat <<<'preprocessing' >phase
+
           mkdir preprocessing-state
           mkdir program-state
           mkdir character-to-number
@@ -37,6 +39,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
+            phase
             preprocessing-state
             program-state
             character-to-number
@@ -46,4 +49,4 @@ jobs:
       - uses: ./.github/actions/empty-commit-to-branch/
         with:
           personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch-name: dummy-preprocessing
+          branch-name: dummy

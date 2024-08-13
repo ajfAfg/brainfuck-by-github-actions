@@ -1,9 +1,9 @@
-name: Brainfuck interpreter by GitHub Actions
+name: "Main: Brainfuck interpreter by GitHub Actions"
 
 on:
   push:
     branches:
-      - dummy-main
+      - dummy
 
 jobs:
   entrypoint:
@@ -15,6 +15,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
+            phase
             preprocessing-state
             program-state
             character-to-number
@@ -22,12 +23,16 @@ jobs:
           key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             ${{ runner.os }}-
-      - name: Exit if `program-state` does not exist
-        id: check-program-state-existance
-        working-directory: program-state
-        run: cat <<<MESSAGE=\'$( cat program-state 2>&1 )\'
-      - run: exit 1
-        if: "${{ steps.check-program-state-existance.outputs.MESSAGE == 'cat: program-state: No such file or directory' }}"
+
+      - id: phase
+        run: cat <<<"VALUE=$( cat phase )" >> $GITHUB_OUTPUT
+      - name: Stop this job if current phase is not `main`
+        run: |
+          gh run cancel ${{ github.run_id }}
+          gh run watch ${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ steps.phase.outputs.VALUE != 'main' }}
 
       #==============================================================================
       # Main
@@ -35,10 +40,10 @@ jobs:
         id: values
         working-directory: program-state
         run: |
-          cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_ENV
-          cat <<< "PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_ENV
+          cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT
+          cat <<< "PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_OUTPUT
           PROGRAM="$(cat program)"
-          cat <<< "CURRENT_CHARACTER=${PROGRAM:$(cat current-program-position):1}" >> $GITHUB_ENV
+          cat <<< "CURRENT_CHARACTER=${PROGRAM:$(cat current-program-position):1}" >> $GITHUB_OUTPUT
 
       - name: ">"
         uses: ./.github/actions/brainfuck-main/>/
@@ -81,10 +86,17 @@ jobs:
         uses: ./.github/actions/brainfuck-main/basis/
         if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) }}
 
+      - run: |
+          echo "${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}"
+          echo "${{ steps.values.outputs.PROGRAM_LENGTH }}"
+          echo "${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) }}"
+          echo "${{ fromJson(steps.values.outputs.PROGRAM_LENGTH) }}"
+
       #==============================================================================
       - uses: actions/cache/save@v4
         with:
           path: |
+            phase
             preprocessing-state
             program-state
             character-to-number
@@ -96,5 +108,5 @@ jobs:
         uses: ./.github/actions/empty-commit-to-branch/
         with:
           personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch-name: dummy-main
+          branch-name: dummy
         if: ${{ steps.basis.outputs.is-finished != 'true' }}
