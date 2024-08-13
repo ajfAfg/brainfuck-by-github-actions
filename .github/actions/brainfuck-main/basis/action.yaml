@@ -13,35 +13,41 @@ runs:
       shell: bash
       working-directory: program-state
       run: |
+        cat <<<'program'
         cat program
-        cat <<<'' # break line
 
         # Display in integer order instead of dictionary order
+        cat <<<'
+        memory'
         cat memory_?
         cat memory_??
         cat memory_???
         cat memory_????
         cat memory_?????
-        cat <<<'' # break line
 
         # Display in integer order instead of dictionary order
+        cat <<<'
+        transition function'
         cat transition-function_? || true
         cat transition-function_?? || true
         cat transition-function_??? || true
         cat transition-function_???? || true
-        cat <<<'' # break line
 
+        cat <<<'
+        current program position'
         cat current-program-position
-        cat <<<'' # break line
 
+        cat <<<'
+        current memory position'
         cat current-memory-position
-        cat <<<'' # break line
 
+        cat <<<'
+        stdin'
         cat stdin
-        cat <<<'' # break line
 
+        cat <<<'
+        stdout'
         cat stdout
-        cat <<<'' # break line
 
 
         cat <<<'IS_FINISHED=true' >> $GITHUB_OUTPUT
