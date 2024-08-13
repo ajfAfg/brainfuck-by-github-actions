@@ -18,20 +18,32 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: denoland/setup-deno@v1
       - uses: actions/checkout@v4
 
-      - name: Create context
-        run: deno run --allow-read createContext.ts "${{ inputs.program }}" "${{ inputs.stdin }}" > context.json
+      - name: Preparation for making each state
+        run: |
+          mkdir preprocessing-state
+          mkdir program-state
+          mkdir character-to-number
+          mkdir number-to-character
 
-      - name: Save context.json
+          cd preprocessing-state
+          cat /dev/null >stack
+          cat <<<"${{ inputs.program }}" >program
+          cat <<<0 >current-program-position
+          cat <<<"${{ inputs.stdin }}" >stdin
+
+      - name: Save the preprocessing state
         uses: actions/cache/save@v4
         with:
           path: |
-            context.json
+            preprocessing-state
+            program-state
+            character-to-number
+            number-to-character
           key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: ./.github/actions/empty-commit-to-branch/
         with:
           personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch-name: dummy-main
+          branch-name: dummy-preprocessing
