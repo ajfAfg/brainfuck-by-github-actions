@@ -1,0 +1,134 @@
+name: Create program state
+description: Create program state. Note that the state is 7-tuple (program, memory, transition function, current program position, current memory position, stdin, stdout).
+
+runs:
+  using: composite
+  steps:
+    - name: Create program state
+      shell: bash
+      working-directory: program-state
+      run: |
+        cp ../preprocessing-state/program .
+        cp ../preprocessing-state/transition-function_* . || true
+        cp ../preprocessing-state/stdin .
+
+        cat <<<0 | tee memory_{0..30000} # 30,000 is byte number of memory (c.f. c.f. https://ja.wikipedia.org/wiki/Brainfuck)
+        cat <<<0 >current-program-position
+        cat <<<0 >current-memory-position
+        cat <<<'' >stdout
+
+    - name: Create character to number dictionary
+      shell: bash
+      working-directory: character-to-number
+      run: |
+        cat <<<65 >A
+        cat <<<66 >B
+        cat <<<67 >C
+        cat <<<68 >D
+        cat <<<69 >E
+        cat <<<70 >F
+        cat <<<71 >G
+        cat <<<72 >H
+        cat <<<73 >I
+        cat <<<74 >J
+        cat <<<75 >K
+        cat <<<76 >L
+        cat <<<77 >M
+        cat <<<78 >N
+        cat <<<79 >O
+        cat <<<80 >P
+        cat <<<81 >Q
+        cat <<<82 >R
+        cat <<<83 >S
+        cat <<<84 >T
+        cat <<<85 >U
+        cat <<<86 >V
+        cat <<<87 >W
+        cat <<<88 >X
+        cat <<<89 >Y
+        cat <<<90 >Z
+
+        cat <<<97  >a
+        cat <<<98  >b
+        cat <<<99  >c
+        cat <<<100 >d
+        cat <<<101 >e
+        cat <<<102 >f
+        cat <<<103 >g
+        cat <<<104 >h
+        cat <<<105 >i
+        cat <<<106 >j
+        cat <<<107 >k
+        cat <<<108 >l
+        cat <<<109 >m
+        cat <<<110 >n
+        cat <<<111 >o
+        cat <<<112 >p
+        cat <<<113 >q
+        cat <<<114 >r
+        cat <<<115 >s
+        cat <<<116 >t
+        cat <<<117 >u
+        cat <<<118 >v
+        cat <<<119 >w
+        cat <<<120 >x
+        cat <<<121 >y
+        cat <<<122 >z
+
+    - name: Create number to character dictionary
+      shell: bash
+      working-directory: number-to-character
+      run: |
+        cat <<<A >65
+        cat <<<B >66
+        cat <<<C >67
+        cat <<<D >68
+        cat <<<E >69
+        cat <<<F >70
+        cat <<<G >71
+        cat <<<H >72
+        cat <<<I >73
+        cat <<<J >74
+        cat <<<K >75
+        cat <<<L >76
+        cat <<<M >77
+        cat <<<N >78
+        cat <<<O >79
+        cat <<<P >80
+        cat <<<Q >81
+        cat <<<R >82
+        cat <<<S >83
+        cat <<<T >84
+        cat <<<U >85
+        cat <<<V >86
+        cat <<<W >87
+        cat <<<X >88
+        cat <<<Y >89
+        cat <<<Z >90
+
+        cat <<<a >97
+        cat <<<b >98
+        cat <<<c >99
+        cat <<<d >100
+        cat <<<e >101
+        cat <<<f >102
+        cat <<<g >103
+        cat <<<h >104
+        cat <<<i >105
+        cat <<<j >106
+        cat <<<k >107
+        cat <<<l >108
+        cat <<<m >109
+        cat <<<n >110
+        cat <<<o >111
+        cat <<<p >112
+        cat <<<q >113
+        cat <<<r >114
+        cat <<<s >115
+        cat <<<t >116
+        cat <<<u >117
+        cat <<<v >118
+        cat <<<w >119
+        cat <<<x >120
+        cat <<<y >121
+        cat <<<z >122

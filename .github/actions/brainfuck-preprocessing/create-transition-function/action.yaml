@@ -1,0 +1,52 @@
+name: Create a transition function
+description: Create a transition function.
+
+runs:
+  using: composite
+  steps:
+    - name: Evaluates values to be used later
+      id: values
+      shell: bash
+      working-directory: preprocessing-state
+      run: |
+        cat <<<"STACK_LENGTH='$(cat stack | wc -c)'" >>$GITHUB_OUTPUT
+        PROGRAM="$(cat program)"
+        cat <<<"CURRENT_PROGRAM_VALUE=$(cat <<<${PROGRAM:$(cat current-program-position):1})" >> $GITHUB_OUTPUT
+        cat <<<"CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT
+
+    - name: Match "["
+      shell: bash
+      working-directory: preprocessing-state
+      run: |
+        cat <<<"${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}" >stack
+      if: ${{ steps.values.outputs.CURRENT_PROGRAM_VALUE == '[' }}
+
+    - name: Match "]" and the stack is empty
+      shell: bash
+      working-directory: preprocessing-state
+      run: |
+        cat <<<"${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}"
+        exit 1
+      if: ${{ steps.values.outputs.CURRENT_PROGRAM_VALUE == ']' && fromJson(steps.values.outputs.STACK_LENGTH) == 0 }}
+
+    - name: Match "]" and the stack is not empty
+      shell: bash
+      working-directory: preprocessing-state
+      run: |
+        I="${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}"
+        J="$(tail -n 1 stack)"
+        cat <<<$(head -n -1 stack) >stack
+        cat <<<"$I" >transition-function_$(cat <<<"$J")
+        cat <<<"$J" >transition-function_$(cat <<<"$I")
+      if: ${{ steps.values.outputs.CURRENT_PROGRAM_VALUE == ']' && !(fromJson(steps.values.outputs.STACK_LENGTH) == 0) }}
+
+    - name: Otherwise
+      shell: bash
+      run: exit 0 # nop
+      if: ${{ ! contains('[]', steps.values.outputs.CURRENT_PROGRAM_VALUE) }}
+
+    - name: Update preprocessing state
+      shell: bash
+      working-directory: preprocessing-state
+      run: |
+        cat <<< $(( steps.values.outputs.CURRENT_PROGRAM_POSITION + 1 )) >current-program-position
