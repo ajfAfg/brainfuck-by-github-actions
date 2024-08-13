@@ -25,10 +25,8 @@ jobs:
           git push origin -d dummy-preprocessing || true
       - name: Create dummy branch
         run: |
-          git checkout main
+          # Make the cache created by `dummy-preprocessing` available to `dummy-main`
           git checkout -b dummy-main
           git push origin dummy-main
-
-          git checkout main
           git checkout -b dummy-preprocessing
           git push origin dummy-preprocessing
