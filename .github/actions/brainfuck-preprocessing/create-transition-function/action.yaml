@@ -9,7 +9,7 @@ runs:
       shell: bash
       working-directory: preprocessing-state
       run: |
-        cat <<<"STACK_LENGTH='$(cat stack | wc -c)'" >>$GITHUB_OUTPUT
+        cat <<<"STACK_LENGTH=$(( $(cat stack | wc -c) - 1 ))" >>$GITHUB_OUTPUT # -1 for the newline character
         PROGRAM="$(cat program)"
         cat <<<"CURRENT_PROGRAM_VALUE=$(cat <<<${PROGRAM:$(cat current-program-position):1})" >> $GITHUB_OUTPUT
         cat <<<"CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT

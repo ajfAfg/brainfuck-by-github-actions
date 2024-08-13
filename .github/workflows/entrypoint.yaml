@@ -30,7 +30,7 @@ jobs:
           mkdir number-to-character
 
           cd preprocessing-state
-          cat /dev/null >stack
+          cat <<<'' >stack
           cat <<<"${{ inputs.program }}" >program
           cat <<<0 >current-program-position
           cat <<<"${{ inputs.stdin }}" >stdin

@@ -59,12 +59,13 @@ jobs:
         uses: ./.github/actions/brainfuck-preprocessing/create-transition-function/
         if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) }}
 
-      - name: Crash if the program scanning is completed and there are any values left on the stack
-        id: stack-length
+      - id: stack-length
         working-directory: preprocessing-state
         run: |
-          cat <<<"VALUE='$(cat stack | wc -c)'" >> $GITHUB_OUTPUT
-      - run: |
+          cat <<<"VALUE=$(( $(cat stack | wc -c) - 1 ))" >> $GITHUB_OUTPUT
+      - name: Crash if the program scanning is completed and there are any values left on the stack
+        working-directory: preprocessing-state
+        run: |
           cat stack
           exit 1
         if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) && fromJson(steps.stack-length.outputs.VALUE) > 0 }}
