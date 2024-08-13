@@ -25,7 +25,16 @@ runs:
       shell: bash
       working-directory: preprocessing-state
       run: |
+        cat <<<'transition function'
+        cat transition-function_? || true
+        cat transition-function_?? || true
+        cat transition-function_??? || true
+        cat transition-function_???? || true
+
+        cat <<<'
+        current program position'
         cat <<<"${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}"
+
         exit 1
       if: ${{ steps.values.outputs.CURRENT_PROGRAM_VALUE == ']' && fromJson(steps.values.outputs.STACK_LENGTH) == 0 }}
 
