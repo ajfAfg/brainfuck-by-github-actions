@@ -1,0 +1,86 @@
+name: Brainfuck interpreter by GitHub Actions
+
+on:
+  push:
+    branches:
+      - dummy-preprocessing
+
+jobs:
+  entrypoint:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore stack
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            preprocessing-state
+            program-state
+            character-to-number
+            number-to-character
+          key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      #==============================================================================
+      # Main
+      - name: Debug print
+        working-directory: preprocessing-state
+        run: |
+          cat stack
+          cat <<<'' # break line
+          cat current-program-position
+
+      - name: Evaluates values to be used later
+        id: values
+        working-directory: preprocessing-state
+        run: |
+          cat <<<"PROGRAM=$(cat program)" >> $GITHUB_OUTPUT
+          cat <<<"CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT
+          cat <<<"PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_OUTPUT
+          cat <<<"STDIN='$(cat stdin)'" >> $GITHUB_OUTPUT
+
+      - name: Create transition function
+        uses: ./.github/actions/brainfuck-preprocessing/create-transition-function/
+        if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) }}
+
+      - name: Crash if the program scanning is completed and there are any values left on the stack
+        id: stack-length
+        working-directory: preprocessing-state
+        run: |
+          cat <<<"VALUE='$(cat stack | wc -c)'" >> $GITHUB_OUTPUT
+      - run: |
+          cat stack
+          exit 1
+        if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) && fromJson(steps.stack-length.outputs.VALUE) > 0 }}
+
+      - name: Create program state if the program scanning is completed
+        uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+        if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) }}
+
+      #==============================================================================
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            preprocessing-state
+            program-state
+            character-to-number
+            number-to-character
+          key: ${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - run: sleep 5
+
+      - name: Fire this workfllow recursively if not finished
+        uses: ./.github/actions/empty-commit-to-branch/
+        with:
+          personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          branch-name: dummy-preprocessing
+        if: ${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH) }}
+
+      - name: Fire next workfllow recursively if finished
+        uses: ./.github/actions/empty-commit-to-branch/
+        with:
+          personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          branch-name: dummy-main
+        if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) }}
