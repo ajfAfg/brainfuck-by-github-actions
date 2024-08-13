@@ -49,4 +49,4 @@ runs:
       shell: bash
       working-directory: preprocessing-state
       run: |
-        cat <<< $(( steps.values.outputs.CURRENT_PROGRAM_POSITION + 1 )) >current-program-position
+        cat <<< $(( ${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }} + 1 )) >current-program-position

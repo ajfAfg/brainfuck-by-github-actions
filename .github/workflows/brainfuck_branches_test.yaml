@@ -12,227 +12,293 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '>>' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '>>' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/>/
       - uses: ./.github/actions/brainfuck-main/>/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
-          test "$(cat context.json | jq -r '.currentMemoryPosition')" = "2"
+          test "$(cat current-program-position)" = "2"
+          test "$(cat current-memory-position)" = "2"
 
   lt: # <
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '<<' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '<<' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/</
       - uses: ./.github/actions/brainfuck-main/</
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
-          test "$(cat context.json | jq -r '.currentMemoryPosition')" = "-2"
+          test "$(cat current-program-position)" = "2"
+          test "$(cat current-memory-position)" = "-2"
 
   plus: # +
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '++' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '++' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/+/
       - uses: ./.github/actions/brainfuck-main/+/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          cat context.json
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
-          test "$(cat context.json | jq -r '.memory[0]')" = "2"
+          test "$(cat current-program-position)" = "2"
+          test "$(cat memory_0)" = "2"
 
   minus: # -
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '--' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '--' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/-/
       - uses: ./.github/actions/brainfuck-main/-/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
-          test "$(cat context.json | jq -r '.memory[0]')" = "-2"
+          test "$(cat current-program-position)" = "2"
+          test "$(cat memory_0)" = "-2"
 
   dot: # .
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
         run: |
-          deno run createContext.ts '..' '' > context.json
-          cat <<<$(jq ".memory[0] = 65" context.json) > context.json
-
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '..' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      - run: cd program-state && echo '65' >memory_0
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/_./
       - uses: ./.github/actions/brainfuck-main/_./
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "2"
-          test "$(cat context.json | jq -r '.stdout')" = "AA"
+          test "$(cat current-program-position)" = "2"
+          test "$(cat stdout)" = "AA"
 
   comma: # ,
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts ',>,' 'AB' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo ',>,' > program
+          echo 'AB' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/,/
       - uses: ./.github/actions/brainfuck-main/>/
       - uses: ./.github/actions/brainfuck-main/,/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "3"
-          test "$(cat context.json | jq -r '.memory[0]')" = "65"
-          test "$(cat context.json | jq -r '.memory[1]')" = "66"
+          test "$(cat current-program-position)" = "3"
+          test "$(cat memory_0)" = "65"
+          test "$(cat memory_1)" = "66"
 
   left-parenthesis1: # [
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '[xxx]' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '[xxx]' > program
+          echo '4' > transition-function_0
+          echo '0' > transition-function_4
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/[/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "5"
+          test "$(cat current-program-position)" = "5"
 
   left-parenthesis2: # [
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
         run: |
-          deno run createContext.ts '[xxx]' '' > context.json
-          cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
-
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '[xxx]' > program
+          echo '4' > transition-function_0
+          echo '0' > transition-function_4
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      - run: cd program-state && echo '1' > memory_0 # The value to be written can be any non-zero number.
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/[/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+          test "$(cat current-program-position)" = "1"
 
   right-parenthesis1: # ]
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
         run: |
-          deno run createContext.ts '[xxx]' '' > context.json
-          cat <<<$(jq ".currentProgramPosition = 4" context.json) > context.json # `]` position
-          cat <<<$(jq ".memory[0] = 1" context.json) > context.json # The value to be written can be any non-zero number.
-
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '[xxx]' > program
+          echo '4' > transition-function_0
+          echo '0' > transition-function_4
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      - run: |
+          cd program-state
+          echo '4' > current-program-position # `]` position
+          echo '1' > memory_0 # The value to be written can be any non-zero number.
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/]/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+          test "$(cat current-program-position)" = "1"
 
   right-parenthesis2: # ]
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
         run: |
-          deno run createContext.ts '[xxx]' '' > context.json
-          cat <<<$(jq ".currentProgramPosition = 4" context.json) > context.json # `]` position
-
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '[xxx]' > program
+          echo '4' > transition-function_0
+          echo '0' > transition-function_4
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      - run: |
+          cd program-state && echo '4' > current-program-position # `]` position
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/]/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "5"
+          test "$(cat current-program-position)" = "5"
 
   otherwise: # Otherwise
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts 'x' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo 'x' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/otherwise/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.currentProgramPosition')" = "1"
+          test "$(cat current-program-position)" = "1"
 
   basis: # Basis
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '' > program
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         id: basis
         uses: ./.github/actions/brainfuck-main/basis/
 
       - name: Verify
+        working-directory: program-state
         run: |
           test "${{ steps.basis.outputs.is-finished }}" = "true"
 
@@ -241,11 +307,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
 
       - name: Setup
-        run: deno run createContext.ts '++>+++++<[->+<]' '' > context.json
-
+        run: |
+          mkdir program-state preprocessing-state character-to-number number-to-character
+          cd preprocessing-state
+          echo '++>+++++<[->+<]' > program
+          echo 14 > transition-function_9
+          echo 9 > transition-function_14
+          echo '' > stdin
+      - uses: ./.github/actions/brainfuck-preprocessing/create-program-state/
+      #
       - name: Exercise
         uses: ./.github/actions/brainfuck-main/+/
       - uses: ./.github/actions/brainfuck-main/+/
@@ -275,5 +347,6 @@ jobs:
       - uses: ./.github/actions/brainfuck-main/basis/
 
       - name: Verify
+        working-directory: program-state
         run: |
-          test "$(cat context.json | jq -r '.memory[1]')" = "7"
+          test "$(cat memory_1)" = "7"
