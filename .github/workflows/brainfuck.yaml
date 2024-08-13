@@ -41,7 +41,7 @@ jobs:
         working-directory: program-state
         run: |
           cat <<< "CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT
-          cat <<< "PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_OUTPUT
+          cat <<< "PROGRAM_LENGTH=$(( $(cat program | wc -c) - 1 ))" >> $GITHUB_OUTPUT # -1 for the newline character
           PROGRAM="$(cat program)"
           cat <<< "CURRENT_CHARACTER=${PROGRAM:$(cat current-program-position):1}" >> $GITHUB_OUTPUT
 
@@ -85,12 +85,6 @@ jobs:
         id: basis
         uses: ./.github/actions/brainfuck-main/basis/
         if: ${{ !(fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) < fromJson(steps.values.outputs.PROGRAM_LENGTH)) }}
-
-      - run: |
-          echo "${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}"
-          echo "${{ steps.values.outputs.PROGRAM_LENGTH }}"
-          echo "${{ fromJson(steps.values.outputs.CURRENT_PROGRAM_POSITION) }}"
-          echo "${{ fromJson(steps.values.outputs.PROGRAM_LENGTH) }}"
 
       #==============================================================================
       - uses: actions/cache/save@v4

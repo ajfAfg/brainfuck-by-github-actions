@@ -52,7 +52,7 @@ jobs:
         run: |
           cat <<<"PROGRAM=$(cat program)" >> $GITHUB_OUTPUT
           cat <<<"CURRENT_PROGRAM_POSITION=$(cat current-program-position)" >> $GITHUB_OUTPUT
-          cat <<<"PROGRAM_LENGTH='$(cat program | wc -c)'" >> $GITHUB_OUTPUT
+          cat <<<"PROGRAM_LENGTH=$(( $(cat program | wc -c) - 1 ))" >> $GITHUB_OUTPUT # -1 for the newline character
           cat <<<"STDIN='$(cat stdin)'" >> $GITHUB_OUTPUT
 
       - name: Create transition function
