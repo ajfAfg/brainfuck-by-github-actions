@@ -18,7 +18,7 @@ runs:
       shell: bash
       working-directory: preprocessing-state
       run: |
-        cat <<<"${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}" >stack
+        cat <<<"${{ steps.values.outputs.CURRENT_PROGRAM_POSITION }}" >>stack
       if: ${{ steps.values.outputs.CURRENT_PROGRAM_VALUE == '[' }}
 
     - name: Match "]" and the stack is empty
