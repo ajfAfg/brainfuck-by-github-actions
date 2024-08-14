@@ -21,6 +21,40 @@ runs:
       shell: bash
       working-directory: character-to-number
       run: |
+        cat <<<32 >' '
+        cat <<<33 >'!'
+        cat <<<34 >'"'
+        cat <<<35 >'#'
+        cat <<<36 >'$'
+        cat <<<37 >'%'
+        cat <<<38 >'&'
+        cat <<<39 >"'"
+        cat <<<40 >'('
+        cat <<<41 >')'
+        cat <<<42 >'*'
+        cat <<<43 >'+'
+        cat <<<44 >','
+        cat <<<45 >'-'
+        # cat <<<46 >'.' # `.` means a directory, so it is impossible to create a file
+        # cat <<<47 >'/' # `.` means a directory, so it is impossible to create a file
+        cat <<<48 >0
+        cat <<<49 >1
+        cat <<<50 >2
+        cat <<<51 >3
+        cat <<<52 >4
+        cat <<<53 >5
+        cat <<<54 >6
+        cat <<<55 >7
+        cat <<<56 >8
+        cat <<<57 >9
+        cat <<<58 >':'
+        cat <<<59 >';'
+        cat <<<60 >'<'
+        cat <<<61 >'='
+        cat <<<62 >'>'
+        cat <<<63 >'?'
+        cat <<<64 >'@'
+
         cat <<<65 >A
         cat <<<66 >B
         cat <<<67 >C
@@ -47,6 +81,13 @@ runs:
         cat <<<88 >X
         cat <<<89 >Y
         cat <<<90 >Z
+
+        cat <<<91 >'['
+        cat <<<92 >'\'
+        cat <<<93 >']'
+        cat <<<94 >'^'
+        cat <<<95 >'_'
+        cat <<<96 >'`'
 
         cat <<<97  >a
         cat <<<98  >b
@@ -75,60 +116,111 @@ runs:
         cat <<<121 >y
         cat <<<122 >z
 
+        cat <<<123 >'{'
+        cat <<<124 >'|'
+        cat <<<125 >'}'
+        cat <<<126 >'~'
+
     - name: Create number to character dictionary
       shell: bash
       working-directory: number-to-character
       run: |
-        cat <<<A >65
-        cat <<<B >66
-        cat <<<C >67
-        cat <<<D >68
-        cat <<<E >69
-        cat <<<F >70
-        cat <<<G >71
-        cat <<<H >72
-        cat <<<I >73
-        cat <<<J >74
-        cat <<<K >75
-        cat <<<L >76
-        cat <<<M >77
-        cat <<<N >78
-        cat <<<O >79
-        cat <<<P >80
-        cat <<<Q >81
-        cat <<<R >82
-        cat <<<S >83
-        cat <<<T >84
-        cat <<<U >85
-        cat <<<V >86
-        cat <<<W >87
-        cat <<<X >88
-        cat <<<Y >89
-        cat <<<Z >90
+        cat <<<' ' >32
+        cat <<<'!' >33
+        cat <<<'"' >34
+        cat <<<'#' >35
+        cat <<<'$' >36
+        cat <<<'%' >37
+        cat <<<'&' >38
+        cat <<<"'" >39
+        cat <<<'(' >40
+        cat <<<')' >41
+        cat <<<'*' >42
+        cat <<<'+' >43
+        cat <<<',' >44
+        cat <<<'-' >45
+        cat <<<'.' >46
+        cat <<<'/' >47
+        cat <<<0   >48
+        cat <<<1   >49
+        cat <<<2   >50
+        cat <<<3   >51
+        cat <<<4   >52
+        cat <<<5   >53
+        cat <<<6   >54
+        cat <<<7   >55
+        cat <<<8   >56
+        cat <<<9   >57
+        cat <<<':' >58
+        cat <<<';' >59
+        cat <<<'<' >60
+        cat <<<'=' >61
+        cat <<<'>' >62
+        cat <<<'?' >63
+        cat <<<'@' >64
 
-        cat <<<a >97
-        cat <<<b >98
-        cat <<<c >99
-        cat <<<d >100
-        cat <<<e >101
-        cat <<<f >102
-        cat <<<g >103
-        cat <<<h >104
-        cat <<<i >105
-        cat <<<j >106
-        cat <<<k >107
-        cat <<<l >108
-        cat <<<m >109
-        cat <<<n >110
-        cat <<<o >111
-        cat <<<p >112
-        cat <<<q >113
-        cat <<<r >114
-        cat <<<s >115
-        cat <<<t >116
-        cat <<<u >117
-        cat <<<v >118
-        cat <<<w >119
-        cat <<<x >120
-        cat <<<y >121
-        cat <<<z >122
+        cat <<<A   >65
+        cat <<<B   >66
+        cat <<<C   >67
+        cat <<<D   >68
+        cat <<<E   >69
+        cat <<<F   >70
+        cat <<<G   >71
+        cat <<<H   >72
+        cat <<<I   >73
+        cat <<<J   >74
+        cat <<<K   >75
+        cat <<<L   >76
+        cat <<<M   >77
+        cat <<<N   >78
+        cat <<<O   >79
+        cat <<<P   >80
+        cat <<<Q   >81
+        cat <<<R   >82
+        cat <<<S   >83
+        cat <<<T   >84
+        cat <<<U   >85
+        cat <<<V   >86
+        cat <<<W   >87
+        cat <<<X   >88
+        cat <<<Y   >89
+        cat <<<Z   >90
+
+        cat <<<'[' >91
+        cat <<<'\' >92
+        cat <<<']' >93
+        cat <<<'^' >94
+        cat <<<'_' >95
+        cat <<<'`' >96
+
+        cat <<<a   >97
+        cat <<<b   >98
+        cat <<<c   >99
+        cat <<<d   >100
+        cat <<<e   >101
+        cat <<<f   >102
+        cat <<<g   >103
+        cat <<<h   >104
+        cat <<<i   >105
+        cat <<<j   >106
+        cat <<<k   >107
+        cat <<<l   >108
+        cat <<<m   >109
+        cat <<<n   >110
+        cat <<<o   >111
+        cat <<<p   >112
+        cat <<<q   >113
+        cat <<<r   >114
+        cat <<<s   >115
+        cat <<<t   >116
+        cat <<<u   >117
+        cat <<<v   >118
+        cat <<<w   >119
+        cat <<<x   >120
+        cat <<<y   >121
+        cat <<<z   >122
+
+        cat <<<'{' >123
+        cat <<<'|' >124
+        cat <<<'}' >125
+        cat <<<'~' >126
