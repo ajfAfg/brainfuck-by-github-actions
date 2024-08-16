@@ -4,7 +4,7 @@ outputs:
   is-finished:
     description: "Whether the program has finished or not"
     value: ${{ steps.basis.outputs.IS_FINISHED }}
-# このアクションは `context.json` というJSONファイルがプロジェクトルートに存在することを仮定している。
+# This action assumes that the state of the Brainfuck interpreter is stored in the directory `program-state`.
 runs:
   using: composite
   steps:
